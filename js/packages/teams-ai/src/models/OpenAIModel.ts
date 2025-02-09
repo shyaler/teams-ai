@@ -12,6 +12,8 @@ import EventEmitter from 'events';
 import { ClientOptions, AzureOpenAI, OpenAI } from 'openai';
 import {
     type ChatCompletionCreateParams,
+    ChatCompletionCreateParamsStreaming,
+    ChatCompletionCreateParamsNonStreaming,
     ChatCompletionMessageParam,
     ChatCompletionChunk,
     ChatCompletion,
@@ -360,7 +362,19 @@ export class OpenAIModel implements PromptCompletionModel {
 
             // Call chat completion API
             let message: Message<string>;
-            const completion = await this._client.chat.completions.create(params);
+            const headers = { "X-ModelType": model };
+            let completion;
+            if (params.stream) {
+                completion = await this._client.chat.completions.create(
+                    params as ChatCompletionCreateParamsStreaming,
+                    { headers }
+                );
+            } else {
+                completion = await this._client.chat.completions.create(
+                    params as ChatCompletionCreateParamsNonStreaming,
+                    { headers }
+                );
+            }
             if (params.stream) {
                 // Log start of streaming
                 if (this.options.logRequests) {
