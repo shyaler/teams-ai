@@ -250,6 +250,7 @@ class OpenAIModel(PromptCompletionModel):
                 parallel_tool_calls=parallel_tool_calls if len(tools) > 0 else NOT_GIVEN,
                 extra_body=extra_body,
                 stream=self._options.stream,
+                extra_headers=[{"X-ModelType": model }],
             )
 
             if self._options.stream:
